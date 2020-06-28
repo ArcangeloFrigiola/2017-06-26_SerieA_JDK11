@@ -1,9 +1,14 @@
 package it.polito.tdp.seriea;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.seriea.model.Model;
+import it.polito.tdp.seriea.model.Season;
+import it.polito.tdp.seriea.model.SquadrePartiteGiocate;
+import it.polito.tdp.seriea.model.Team;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -23,10 +28,10 @@ public class FXMLController {
     private URL location;
 
     @FXML
-    private ChoiceBox<?> boxSquadra;
+    private ChoiceBox<Team> boxSquadra;
 
     @FXML
-    private ChoiceBox<?> boxStagione;
+    private ChoiceBox<Season> boxStagione;
 
     @FXML
     private Button btnCalcolaConnessioniSquadra;
@@ -42,17 +47,58 @@ public class FXMLController {
 
     @FXML
     void doAnalizzaSquadre(ActionEvent event) {
-
+    	
+    	this.txtResult.clear();
+    	
+    	try{
+    		
+    		this.model.creaGrafo();
+    		this.txtResult.appendText("Grafo creato!\n"
+    				+ "# vertici: "+this.model.getNvertici()+"\n# archi: "+this.model.getNarchi());
+    		this.boxSquadra.getItems().setAll(this.model.getSquadre());
+    		this.boxStagione.getItems().setAll(this.model.getStagioni());
+    		
+    	}catch(Exception e) {
+    		
+    		this.txtResult.appendText("Errore nella creazione del grafo!");
+    		return;
+    	}
     }
 
     @FXML
     void doCalcolaConnessioniSquadra(ActionEvent event) {
-
+    	
+    	this.txtResult.clear();
+    	try {
+    		
+    		List<SquadrePartiteGiocate> temp = new ArrayList<>(this.model.getConnessioniSquadra(this.boxSquadra.getValue()));
+    		String result="Squadre affrontate dal Team "+this.boxSquadra.getValue().getTeam()+":\n";
+    		
+    		for(SquadrePartiteGiocate s: temp) {
+    			result+=s.getTeam2().getTeam()+", "+s.getPartiteGiocate()+" volte\n";
+    		}
+    		
+    		this.txtResult.appendText(result);
+    		
+    	}catch(Exception e) {
+    		this.txtResult.appendText("Premere \"Analizza squadre\" e scegliere una squadra dal menu' a tendina!");
+    		return;
+    	}
     }
 
     @FXML
     void doSimulaTifosi(ActionEvent event) {
-
+    	
+    	this.txtResult.clear();
+    	try {
+    		
+    		this.txtResult.appendText(this.model.simulaTifosi(this.boxStagione.getValue()));
+    		
+    	}catch(Exception e) {
+    		this.txtResult.appendText("Premere \"Analizza squadre\", poi scegliere una Stagione dal menu' a tendina!");
+    		e.printStackTrace();
+    		return;
+    	}
     }
 
     @FXML
@@ -68,5 +114,6 @@ public class FXMLController {
 
 	public void setModel(Model model) {
 		this.model = model;
+		this.txtResult.editableProperty().set(false);
 	}
 }

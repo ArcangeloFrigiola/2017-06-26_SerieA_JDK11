@@ -3,11 +3,27 @@ package it.polito.tdp.seriea.model;
 public class Team {
 
 	private String team;
+	private int punteggio;
 
 	public Team(String team) {
 		super();
 		this.team = team;
+		this.punteggio = 0;
 	}
+	
+	
+
+	public int getPunteggio() {
+		return punteggio;
+	}
+
+
+
+	public void setPunteggio(int punteggio) {
+		this.punteggio = punteggio;
+	}
+
+
 
 	/**
 	 * @return the team
